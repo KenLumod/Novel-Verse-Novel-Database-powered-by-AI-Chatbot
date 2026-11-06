@@ -19,6 +19,11 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 HF_TOKEN = os.getenv("HF_TOKEN", "")
+OUT_OF_SCOPE_MARKER = "[NOVELVERSE_OUT_OF_SCOPE]"
+OUT_OF_SCOPE_REPLY = (
+    "I’m focused on novels and related topics like plots, characters, genres, authors, "
+    "reading recommendations, and novel writing. What would you like to explore?"
+)
 
 
 class RecommendationServiceError(RuntimeError):
@@ -123,16 +128,23 @@ def call_llm_explanation(
         if item.get("role") in {"user", "assistant"} and item.get("content")
     ) or "(This is the start of the conversation.)"
     if catalog_status == "not_searched":
-        catalog_note = "This is casual conversation or a general chatbot question. No catalog search was run. Reply naturally and briefly, and invite the reader to ask about a novel or describe what they want to read when it fits."
+        catalog_note = "No catalog search was run. Answer a novel-related question from general knowledge when useful."
     elif catalog_status == "no_matches":
-        catalog_note = "The catalog search returned no matching novels. Be transparent about that, answer any general part of the question if possible, and do not invent catalog matches or claim unsupported details."
+        catalog_note = ("The catalog search returned no matching entries. You may still answer general questions about novels, fiction, reading, "
+                        "authors, genres, literary concepts, or novel writing from general knowledge. Never imply that an outside recommendation "
+                        "was found in this catalog. For a specific title, say the catalog could not verify it; only provide plot or character "
+                        "details if you know them with confidence, and be clear when uncertain.")
     elif catalog_status == "ambiguous":
         catalog_note = "Catalog search found several plausible entries but no confident single answer. Do not present any as confirmed; ask one natural, useful follow-up question to distinguish them."
     else:
         catalog_note = "Use the catalog entries below as the factual source for titles and novel details. Mention only listed titles as catalog matches, and say when a requested fact is not provided."
 
     prompt = (
-        "You are NovelVerse, a helpful, natural reading companion. Continue the conversation with awareness of the recent turns. "
+        "You are NovelVerse, a helpful, natural reading companion with a strict topic boundary. You may discuss novels and fiction, "
+        "their plots, characters, themes, authors, genres, reading order, adaptations when tied to a novel, reading recommendations, "
+        "literary concepts, and writing novels. Casual greetings are also okay. For a request outside these topics, output exactly "
+        f"{OUT_OF_SCOPE_MARKER} and nothing else. If a request mixes topics, answer only its novel-related part. "
+        "Continue the conversation with awareness of recent turns, but judge the latest request against this boundary. "
         "Answer what the reader actually asked, vary your wording naturally, and do not force every reply into recommendations. "
         "Be warm and concise, but give useful detail when asked. Use simple Markdown paragraphs or bullets, never Markdown tables. "
         "When novel cards are being displayed, do not repeat their title/metadata in a table; give a brief conversational lead-in instead. "
@@ -160,6 +172,8 @@ def call_llm_explanation(
                 max_completion_tokens=700,
             )
             text = completion.choices[0].message.content.strip() if completion.choices else ""
+            if text == OUT_OF_SCOPE_MARKER:
+                return OUT_OF_SCOPE_REPLY, None
             return (text, None) if text else ("", "Groq returned no explanation text for this request.")
         except Exception as e:
             status_code = getattr(e, "status_code", None)
@@ -187,6 +201,8 @@ def call_llm_explanation(
                 parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
                 text = "".join(part.get("text", "") for part in parts).strip()
                 if text:
+                    if text == OUT_OF_SCOPE_MARKER:
+                        return OUT_OF_SCOPE_REPLY, None
                     return text, None
                 return "", f"{provider_name} returned no text for this request."
         except urllib.error.HTTPError as e:
@@ -310,12 +326,16 @@ def _is_title_question(query: str) -> bool:
     asks_about_details = bool(re.search(
         r"\b(?:main character|protagonist|plot|story|summary|description|author|genre|status|rating|details|about)\b",
         text,
+    )) or bool(re.search(
+        r"\btell me about\s+(?:(?:this|the)\s+)?(?:novel|book|story)\b",
+        text,
     ))
     return starts_as_question and asks_about_details and not _is_identification_query(query)
 
 
 def _extract_title_reference(query: str) -> str:
     patterns = (
+        r"^(?:tell me about|describe|explain)\s+(?:(?:this|the)\s+)?(?:novel|book|story)\s+(.+?)\s*[?.!]*$",
         r"\b(?:of|about|for|in)\s+(.+?)\s*[?.!]*$",
         r"^(?:describe|explain|tell me about)\s+(.+?)\s*[?.!]*$",
     )
@@ -378,6 +398,35 @@ def _catalog_context(novels: List[Dict[str, Any]]) -> str:
     return "\n".join(blocks)
 
 
+def _answer_denies_catalog_match(answer: str) -> bool:
+    """Catch a generated no-match claim when retrieval already found a novel."""
+    text = re.sub(r"\s+", " ", answer.lower()).replace("’", "'")
+    return bool(re.search(
+        r"\b(?:couldn't|could not|can't|cannot|wasn't able to|unable to)\s+(?:find|locate)\b"
+        r"|\bno\s+(?:matching\s+)?(?:novel|book|entry|result)s?\s+(?:was|were|is|are)\s+found\b"
+        r"|\b(?:not|isn't|is not)\s+(?:listed|available|in the catalog)\b",
+        text,
+    ))
+
+
+def _catalog_fallback(novels: List[Dict[str, Any]], answer_mode: str) -> str:
+    first = novels[0]
+    summary = [
+        f"{label}: {first.get(field)}"
+        for label, field in (("Author", "authors"), ("Genres", "genres"), ("Tags", "tags"),
+                             ("Rating", "rating"), ("Language", "language"), ("Year", "year"),
+                             ("Chapters", "chapters"))
+        if first.get(field) not in (None, "", [], {})
+    ]
+    metadata_text = " · ".join(summary)
+    description = first.get("description") or "The catalog has no description for this title."
+    if answer_mode == "title":
+        return f"{first.get('title')}: {metadata_text + '. ' if metadata_text else ''}{description}"
+    if answer_mode == "identify":
+        return f"The closest catalog match is {first.get('title')}: {metadata_text + '. ' if metadata_text else ''}{description}"
+    return f"I found {len(novels)} novels in the live catalog that may match your request:"
+
+
 def _respond_with_novels(
     user_query: str,
     novels: List[Dict[str, Any]],
@@ -386,23 +435,19 @@ def _respond_with_novels(
 ) -> Dict[str, Any]:
     context = _catalog_context(novels)
     explanation, explanation_error = call_llm_explanation(user_query, context, history)
+    if explanation == OUT_OF_SCOPE_REPLY:
+        return {
+            "status": "success",
+            "message": OUT_OF_SCOPE_REPLY,
+            "explanation_status": "available",
+            "recommendations": [],
+        }
     explanation_status = "available" if explanation else "unavailable"
-    if not explanation:
-        first = novels[0]
-        summary = [
-            f"{label}: {first.get(field)}"
-            for label, field in (("Author", "authors"), ("Genres", "genres"), ("Tags", "tags"),
-                                 ("Rating", "rating"), ("Language", "language"), ("Year", "year"),
-                                 ("Chapters", "chapters"))
-            if first.get(field) not in (None, "", [], {})
-        ]
-        metadata_text = " · ".join(summary)
-        if answer_mode == "title":
-            explanation = f"{first.get('title')}: {metadata_text + '. ' if metadata_text else ''}{first.get('description') or 'The catalog has no description for this title.'}"
-        elif answer_mode == "identify":
-            explanation = f"The closest catalog match is {first.get('title')}: {metadata_text + '. ' if metadata_text else ''}{first.get('description') or 'The catalog has no description for this title.'}"
-        else:
-            explanation = f"I found {len(novels)} novels in the live catalog that may match your request:"
+    if not explanation or _answer_denies_catalog_match(explanation):
+        # Retrieval is the source of truth for whether a catalog entry exists.
+        # Do not let a contradictory LLM response erase a valid search result.
+        explanation = _catalog_fallback(novels, answer_mode)
+        explanation_status = "fallback"
 
     return {
         "status": "success",
@@ -530,12 +575,15 @@ def generate_recommendation_response(
     novels = novels[:top_k]
 
     if not novels:
-        if semantic_error and not metadata:
-            raise semantic_error
         answer, explanation_error = call_llm_explanation(user_query, "", history, catalog_status="no_matches")
         return {
             "status": "empty",
-            "message": answer or "I couldn’t find a close catalog match. Could you share another detail about the plot, characters, or themes?",
+            "message": answer or (
+                f"I couldn’t search the live catalog ({semantic_error}). I can still discuss novels and related topics—"
+                "try asking about a genre, writing idea, or a title you remember."
+                if semantic_error else
+                "I couldn’t find a close catalog match. I can still help with novel-related questions from general knowledge."
+            ),
             "recommendations": [],
             "explanation_status": "available" if answer else "unavailable",
             "explanation_error": explanation_error,
