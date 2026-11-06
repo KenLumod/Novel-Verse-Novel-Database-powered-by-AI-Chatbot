@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In — NovelVerse</title>
+    <link rel="stylesheet" href="css/styles.css?v=20261106-sidebar450">
+    <link rel="stylesheet" href="css/chatbot.css?v=20261106-chat-format2">
+    <link rel="stylesheet" href="css/responsive.css?v=20261106-dreamy1">
+    <link rel="stylesheet" href="css/discovery-theme.css?v=20261106-cover-carousel1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <aside class="chatbot-sidebar" id="chatbotSidebar">
+        <div class="chatbot-header">
+            <div class="chatbot-logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <button class="chatbot-toggle-close" id="chatbotClose" title="Collapse chatbot">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="chatbot-subtitle">Describe the story you want to read.</div>
+        <div class="chatbot-messages" id="chatMessages"></div>
+        <div class="chatbot-input-area">
+            <form id="chatForm" autocomplete="off">
+                <div class="input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+                    <button type="submit" id="chatSend" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <button class="chatbot-toggle-open" id="chatbotOpen" title="Open AI Assistant">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <main class="main-content" id="mainContent">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-book-open"></i>
+                <span>NovelVerse</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="library.html" class="nav-link">Library</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="admin.html" class="nav-link active" id="navLogin">Log In</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <section class="login-wrap admin-page">
+            <div class="login-card" id="loginCard">
+                <div class="login-mark"><i class="fas fa-book-open"></i></div>
+                <h1>Welcome back</h1>
+                <p class="page-subtitle">Sign in with your administrator account.</p>
+                <form id="loginForm">
+                    <div class="login-field">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" autocomplete="username" placeholder="Your admin username" required>
+                    </div>
+                    <div class="login-field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Your password" required>
+                    </div>
+                    <p class="login-error" id="loginError" role="alert"></p>
+                    <button class="login-submit" type="submit"><span>Sign in</span><i class="fas fa-arrow-right"></i></button>
+                </form>
+                <p class="login-note"><i class="fas fa-lock"></i> Secure admin access</p>
+            </div>
+            <div class="login-card admin-signed-in" id="adminCard" hidden>
+                <div class="login-mark"><i class="fas fa-user-shield"></i></div>
+                <h1>Admin access active</h1>
+                <p class="page-subtitle">Signed in as <strong id="adminName"></strong>. Open any novel to edit or delete it.</p>
+                <a class="login-submit admin-library-link" href="library.html">Go to library <i class="fas fa-arrow-right"></i></a>
+                <button class="login-submit secondary" type="button" id="logoutBtn">Log out</button>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-book-open"></i>
+                    <span>NovelVerse</span>
+                </div>
+                <p class="footer-text">AI-powered novel discovery platform. Find your next favorite story.</p>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="library.html">Library</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js?v=20261105-catalog-status"></script>
+    <script src="js/chatbot.js?v=20261106-chat-format2"></script>
+    <script src="js/admin.js?v=20261105-admin2"></script>
+</body>
+</html>

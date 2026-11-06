@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovelVerse — Discover Your Next Story</title>
+    <link rel="stylesheet" href="css/styles.css?v=20261106-sidebar450">
+    <link rel="stylesheet" href="css/chatbot.css?v=20261106-chat-format2">
+    <link rel="stylesheet" href="css/responsive.css?v=20261106-dreamy1">
+    <link rel="stylesheet" href="css/discovery-theme.css?v=20261106-cover-carousel1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- AI Chatbot Sidebar -->
+    <aside class="chatbot-sidebar" id="chatbotSidebar">
+        <div class="chatbot-header">
+            <div class="chatbot-logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <button class="chatbot-toggle-close" id="chatbotClose" title="Collapse chatbot">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="chatbot-subtitle">
+            Describe the story you want to read.
+        </div>
+        <div class="chatbot-messages" id="chatMessages"></div>
+        <div class="chatbot-input-area">
+            <form id="chatForm" autocomplete="off">
+                <div class="input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+                    <button type="submit" id="chatSend" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Chatbot toggle button (visible when collapsed) -->
+    <button class="chatbot-toggle-open" id="chatbotOpen" title="Open AI Assistant">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-book-open"></i>
+                <span>NovelVerse</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="library.html" class="nav-link">Library</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="admin.html" class="nav-link" id="navLogin">Log In</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-particles" id="heroParticles"></div>
+            <div class="hero-content">
+                <div class="hero-badge"><i class="fas fa-sparkles"></i> AI-powered novel discovery</div>
+                <h1 class="hero-title">
+                    Find Your Next<br>Favorite <span class="gradient-text">Novel</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Tell us what kind of story you want, and let AI<br class="desktop-break">
+                    find the perfect novels for you.
+                </p>
+                <form class="hero-search" id="heroSearchForm">
+                    <i class="far fa-comment-dots"></i>
+                    <input type="text" id="heroSearch" placeholder="Search novels by title, genre, or author..." aria-label="Search novels by title, genre, or author">
+                    <button type="submit">Discover <i class="fas fa-arrow-right"></i></button>
+                </form>
+                <div class="hero-benefits" aria-label="Discovery features">
+                    <span><i class="fas fa-bolt"></i> Smart matching</span>
+                    <span><i class="fas fa-star"></i> Personalized picks</span>
+                    <span><i class="fas fa-heart"></i> Discover more</span>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-stat="novels">0</span>
+                        <span class="stat-label">Novels</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-stat="genres">0</span>
+                        <span class="stat-label">Genres</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-stat="authors">0</span>
+                        <span class="stat-label">Authors</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-art" id="heroArtwork" aria-hidden="true">
+                <div class="hero-art-glow"></div>
+                <div class="hero-art-orbit hero-art-orbit-one"></div>
+                <div class="hero-art-orbit hero-art-orbit-two"></div>
+                <div class="hero-art-book"><div class="hero-art-page hero-art-page-left"></div><div class="hero-art-page hero-art-page-right"></div></div>
+                <div class="hero-art-cover hero-art-cover-back"></div>
+                <div class="hero-art-cover hero-art-cover-front"></div>
+                <div class="hero-art-sparkle sparkle-one">✦</div><div class="hero-art-sparkle sparkle-two">✧</div>
+            </div>
+        </section>
+
+        <!-- Popular Novels Section -->
+        <section class="section" id="popularNovels">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-fire"></i> Popular Novels
+                </h2>
+                <a href="library.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="novel-grid" id="popularGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Genre Explore Section -->
+        <section class="section" id="genreSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-compass"></i> Explore by Genre
+                </h2>
+            </div>
+            <div class="genre-grid" id="genreGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Recently Added Section -->
+        <section class="section" id="recentNovels">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-clock"></i> Recently Added
+                </h2>
+                <a href="library.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="novel-grid" id="recentGrid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-book-open"></i>
+                    <span>NovelVerse</span>
+                </div>
+                <p class="footer-text">AI-powered novel discovery platform. Find your next favorite story.</p>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="library.html">Library</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js?v=20261105-catalog-status"></script>
+    <script src="js/chatbot.js?v=20261106-chat-format2"></script>
+    <script src="js/app.js?v=20261106-cover-carousel2"></script>
+</body>
+
+</html>

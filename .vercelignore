@@ -1,0 +1,10 @@
+.env
+.env.*
+.venv/
+venv/
+.task-tmp/
+.vscode/
+__pycache__/
+scripts/
+*.xlsx
+*.csv

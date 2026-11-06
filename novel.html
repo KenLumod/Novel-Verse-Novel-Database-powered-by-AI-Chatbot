@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novel Details — NovelVerse</title>
+    <link rel="stylesheet" href="css/styles.css?v=20261106-sidebar450">
+    <link rel="stylesheet" href="css/chatbot.css?v=20261106-chat-format2">
+    <link rel="stylesheet" href="css/responsive.css?v=20261106-dreamy1">
+    <link rel="stylesheet" href="css/discovery-theme.css?v=20261106-cover-carousel1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- AI Chatbot Sidebar -->
+    <aside class="chatbot-sidebar" id="chatbotSidebar">
+        <div class="chatbot-header">
+            <div class="chatbot-logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <button class="chatbot-toggle-close" id="chatbotClose" title="Collapse chatbot">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="chatbot-subtitle">
+            Describe the story you want to read.
+        </div>
+        <div class="chatbot-messages" id="chatMessages"></div>
+        <div class="chatbot-input-area">
+            <form id="chatForm" autocomplete="off">
+                <div class="input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+                    <button type="submit" id="chatSend" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <button class="chatbot-toggle-open" id="chatbotOpen" title="Open AI Assistant">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-book-open"></i>
+                <span>NovelVerse</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="library.html" class="nav-link">Library</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="admin.html" class="nav-link" id="navLogin">Log In</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <!-- Novel Detail Content -->
+        <section class="novel-detail" id="novelDetail">
+            <!-- Populated by JS -->
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading novel details...</p>
+            </div>
+        </section>
+
+        <!-- Similar Novels -->
+        <section class="section" id="similarSection" style="display:none;">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-book"></i> You Might Also Like
+                </h2>
+            </div>
+            <div class="novel-grid" id="similarGrid"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-book-open"></i>
+                    <span>NovelVerse</span>
+                </div>
+                <p class="footer-text">AI-powered novel discovery platform. Find your next favorite story.</p>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="library.html">Library</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js?v=20261105-catalog-status"></script>
+    <script src="js/chatbot.js?v=20261106-chat-format2"></script>
+    <script src="js/novel-detail.js?v=20261106-cover-fallback1"></script>
+</body>
+</html>
+

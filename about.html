@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — NovelVerse</title>
+    <link rel="stylesheet" href="css/styles.css?v=20261106-sidebar450">
+    <link rel="stylesheet" href="css/chatbot.css?v=20261106-chat-format2">
+    <link rel="stylesheet" href="css/responsive.css?v=20261106-dreamy1">
+    <link rel="stylesheet" href="css/discovery-theme.css?v=20261106-cover-carousel1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- AI Chatbot Sidebar -->
+    <aside class="chatbot-sidebar" id="chatbotSidebar">
+        <div class="chatbot-header">
+            <div class="chatbot-logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <button class="chatbot-toggle-close" id="chatbotClose" title="Collapse chatbot">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="chatbot-subtitle">
+            Describe the story you want to read.
+        </div>
+        <div class="chatbot-messages" id="chatMessages"></div>
+        <div class="chatbot-input-area">
+            <form id="chatForm" autocomplete="off">
+                <div class="input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+                    <button type="submit" id="chatSend" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <button class="chatbot-toggle-open" id="chatbotOpen" title="Open AI Assistant">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-book-open"></i>
+                <span>NovelVerse</span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="library.html" class="nav-link">Library</a>
+                <a href="about.html" class="nav-link active">About</a>
+                <a href="admin.html" class="nav-link" id="navLogin">Log In</a>
+            </div>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+
+        <!-- About Content -->
+        <section class="about-page">
+            <div class="about-hero">
+                <h1 class="page-title">About NovelVerse</h1>
+                <p class="page-subtitle">AI-powered novel discovery, built for readers who love web fiction.</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Our Purpose</h3>
+                    <p>NovelVerse is an AI-powered novel discovery platform designed to help readers find their next favorite web novel. Instead of manually scrolling through hundreds of titles, you can describe the kind of story you want and let our AI assistant do the searching for you.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>How the AI Works</h3>
+                    <p>Our chatbot analyzes your description — themes, tropes, character types, plot elements — and searches through our novel database to find the most relevant matches. It ranks results by how closely they match your request and presents the top recommendations with explanations.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Our Collection</h3>
+                    <p>We curate novels from popular web fiction platforms. Each entry includes detailed descriptions, genre tags, author information, ratings, and cover art — giving you everything you need to decide if a novel is right for you.</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Technology</h3>
+                    <p>Built with vanilla HTML, CSS, and JavaScript. The AI recommendation engine uses natural language processing techniques to match user queries with novel descriptions, including keyword extraction, TF-IDF scoring, and semantic similarity.</p>
+                </div>
+            </div>
+
+            <!-- How to Use Section -->
+            <div class="how-to-use">
+                <h2>How to Use NovelVerse</h2>
+                <div class="steps-grid">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Open the AI Chat</h4>
+                        <p>The AI Assistant lives on the left side of every page. It's always ready to help you discover novels.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Describe What You Want</h4>
+                        <p>Type a description of the kind of story you're looking for. Be as specific or general as you like.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Get Recommendations</h4>
+                        <p>The AI searches our database and returns the top 5 matching novels, with explanations for each match.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Explore & Read</h4>
+                        <p>Click on any novel card to see its full details, or browse the library to discover more stories.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example Queries -->
+            <div class="example-queries">
+                <h2>Example Queries</h2>
+                <div class="query-examples" id="queryExamples"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-book-open"></i>
+                    <span>NovelVerse</span>
+                </div>
+                <p class="footer-text">AI-powered novel discovery platform. Find your next favorite story.</p>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="library.html">Library</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js?v=20261105-catalog-status"></script>
+    <script src="js/chatbot.js?v=20261106-chat-format2"></script>
+    <script src="js/about.js"></script>
+</body>
+</html>
+

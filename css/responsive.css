@@ -1,0 +1,256 @@
+/* ===================================
+   Responsive Breakpoints
+   =================================== */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+    .novel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .detail-layout {
+        grid-template-columns: 220px 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Small tablet / large phone (≤ 768px) */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 300px;
+    }
+
+    /* Chatbot off by default on mobile */
+    body:not(.chatbot-expanded) .chatbot-sidebar {
+        transform: translateX(-100%);
+    }
+
+    body:not(.chatbot-expanded) .main-content {
+        margin-left: 0;
+    }
+
+    body:not(.chatbot-expanded) .chatbot-toggle-open {
+        display: flex;
+    }
+
+    body.chatbot-expanded .main-content {
+        margin-left: 0;
+    }
+
+    body.chatbot-expanded .chatbot-sidebar {
+        transform: translateX(0);
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Navigation */
+    .nav-hamburger {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: var(--navbar-height);
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        flex-direction: column;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        gap: 0.25rem;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: 0.7rem 1rem;
+        width: 100%;
+    }
+
+    /* Hero */
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-section {
+        padding: 3rem 1.5rem 3rem;
+    }
+
+    .hero-stats {
+        gap: 2rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    /* Grids */
+    .novel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+    /* Detail page */
+    .detail-layout {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .detail-cover {
+        max-width: 250px;
+        margin: 0 auto;
+    }
+
+    .detail-meta,
+    .detail-genres,
+    .detail-tags {
+        justify-content: center;
+    }
+
+    .detail-description {
+        text-align: left;
+    }
+
+    /* Library */
+    .library-controls {
+        flex-direction: column;
+    }
+
+    .filter-controls {
+        width: 100%;
+    }
+
+    /* About */
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Section padding */
+    .section {
+        padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .navbar {
+        padding: 0 1.5rem;
+    }
+}
+
+/* Phone (≤ 480px) */
+@media (max-width: 480px) {
+    :root {
+        --sidebar-width: 100vw;
+    }
+
+    .hero-title {
+        font-size: 1.7rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .novel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .genre-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-stats {
+        gap: 1.5rem;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 1.5rem 1rem 2rem;
+    }
+
+    .navbar {
+        padding: 0 1rem;
+    }
+
+    .library-controls {
+        padding: 0 1rem 1rem;
+    }
+
+    .results-info {
+        padding: 0 1rem;
+    }
+
+    .library-header {
+        padding: 2rem 1rem 1rem;
+    }
+
+    .about-page {
+        padding: 1.5rem 1rem;
+    }
+
+    .novel-detail {
+        padding: 1.5rem 1rem;
+    }
+
+    .filter-controls {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 800px) {
+    .admin-columns { grid-template-columns: 1fr; }
+    .catalog-list { max-height: 430px; }
+}
+
+@media (max-width: 560px) {
+    .admin-page { padding: 2rem 1rem; }
+    .login-card, .admin-panel { padding: 1.25rem; }
+    .admin-heading { align-items: flex-start; flex-direction: column; }
+    .admin-session { align-self: stretch; }
+    .admin-session #adminName { flex: 1; }
+    .form-row { grid-template-columns: 1fr; }
+}
+
+/* Overlay for mobile chatbot */
+.chatbot-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+}
+
+body.chatbot-expanded .chatbot-overlay {
+    display: block;
+}
+
+@media (min-width: 769px) {
+    body.chatbot-expanded .chatbot-overlay {
+        display: none;
+    }
+}
+
