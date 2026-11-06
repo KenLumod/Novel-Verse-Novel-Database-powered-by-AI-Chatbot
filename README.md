@@ -1,10 +1,43 @@
+<div align="center">
+
 # NovelVerse
 
-NovelVerse is a web novel catalog with a conversational discovery assistant. The site is plain HTML, CSS, and JavaScript. A FastAPI service handles catalog requests, admin edits, semantic search, and the model-generated chat replies. Novel records and their search embeddings live in Supabase.
+### Find a web novel by describing the story you want.
 
-## Run it locally
+Browse a live novel catalog, look up a title, or ask the chat assistant for stories with a certain plot, character, or vibe.
 
-Use Python 3.12. In PowerShell, from this folder:
+**HTML · CSS · JavaScript · FastAPI · Supabase · Groq**
+
+</div>
+
+---
+
+## What the site does
+
+- **Home:** shows popular and recently added novels, plus genres to explore.
+- **Library:** searches titles and authors, filters by genre or status, and sorts the results.
+- **Novel pages:** show a novel’s description and catalog details, with links to similar titles.
+- **Chat assistant:** answers questions about a named novel, identifies titles from plot descriptions, and finds recommendations from the catalog. It keeps recent chat turns when you move between site pages in the same tab.
+- **Admin:** lets the signed-in administrator add, edit, and delete catalog records.
+
+## How it works
+
+The site is plain HTML, CSS, and JavaScript; it has no frontend build step. On Vercel, the static pages and assets are served by Vercel, while requests under `/api` go to the FastAPI Python function.
+
+For catalog browsing, the browser calls FastAPI routes such as `/api/novels` and `/api/stats`. FastAPI reads the live records from Supabase. The home and library pages can show the small bundled sample catalog in `js/data.js` if the live API is unavailable. The chatbot does not pretend those samples are live search results; it needs the API and catalog connection to answer novel searches.
+
+For a chat request, `js/chatbot.js` sends the current message and recent conversation to `POST /api/recommend`. The API:
+
+1. Looks up an exact or close title for questions about a named novel.
+2. For plot searches, embeds the request into a 384-number vector using `all-MiniLM-L6-v2` and asks Supabase `pgvector` for similar descriptions.
+3. Also checks catalog text fields such as title, alternate names, authors, genres, tags, rating, language, year, and chapter count.
+4. Sends the best catalog entries and recent chat turns to the configured language model, which writes the reply. The matching records are returned separately for the clickable novel cards.
+
+The embedding model and the language model do different jobs: the embedding finds likely catalog matches; Groq writes the conversational explanation. Locally, embeddings use the downloaded sentence-transformer model. In Vercel, they use Hugging Face inference so the model files do not need to be included in the serverless function.
+
+## Run locally
+
+You’ll need Python 3.12. In PowerShell, from the project folder:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -13,59 +46,47 @@ python -m pip install -r requirements-local.txt
 Copy-Item .env.example .env
 ```
 
-Edit `.env` with your Supabase connection and AI provider settings. For local semantic search, leave `EMBEDDING_PROVIDER=local`. The first search loads the `all-MiniLM-L6-v2` embedding model. To start the site:
+Add your Supabase URL and key, embedding settings, and LLM settings to `.env`. Keep this file private; it is ignored by Git. For local semantic search, use `EMBEDDING_PROVIDER=local`.
+
+Start the app:
 
 ```powershell
 python -m uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Open <http://127.0.0.1:8000>. The API docs are at <http://127.0.0.1:8000/docs>. Keep the server running while you use the site.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The FastAPI docs are at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). The server must stay running while you use the site.
 
-## Supabase setup
+## Set up Supabase
 
-Run [`supabase_schema.sql`](supabase_schema.sql) in the Supabase SQL Editor. It creates the `novels` table, vector index, row-level security policy, and `match_novels` search function.
+Supabase is the database and vector search service; it does not host this website.
 
-The spreadsheet used to populate the catalog is not included in this repository. To load one, install the local requirements, set `SUPABASE_URL` and `SUPABASE_KEY` in `.env`, and run:
+1. Create a Supabase project.
+2. Open its **SQL Editor** and run [`supabase_schema.sql`](supabase_schema.sql). This enables `pgvector`, creates the `novels` table and vector index, enables row-level security, and adds the `match_novels` RPC used by semantic search.
+3. Add novel records and their 384-dimensional embeddings. The source spreadsheet is not in this repository. If you have the Excel dataset, install `requirements-local.txt`, set `SUPABASE_URL` and `SUPABASE_KEY` in `.env`, then run:
 
-```powershell
-python scripts/ingest_novels.py --file "C:\path\to\cleaned_novels.xlsx"
-```
+   ```powershell
+   python scripts/ingest_novels.py --file "C:\path\to\cleaned_novels.xlsx"
+   ```
 
-The workbook needs a `Sheet1` sheet with columns such as `novel_id`, `title`, and `description`. The importer creates embeddings from descriptions and upserts records into Supabase.
-
-## Admin login
-
-Set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SECRET` in the server environment. The API checks a PBKDF2-SHA256 password hash and issues an HTTP-only, signed session cookie; do not put the admin password or signing secret in frontend code.
-
-To generate a password hash in PowerShell, run this and save its output as `ADMIN_PASSWORD_HASH`:
-
-```powershell
-python -c 'import getpass,secrets,hashlib; p=getpass.getpass("Admin password: "); n=200000; s=secrets.token_hex(16); h=hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),n).hex(); print(f"pbkdf2_sha256${n}${s}${h}")'
-```
-
-Generate a separate signing secret with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+   The workbook needs a `Sheet1` sheet with `novel_id`, `title`, and `description` columns, along with the optional catalog columns used by the site. The importer embeds each description and upserts the record. You can also add records through the admin page after setting up admin credentials.
 
 ## Deploy to Vercel
 
-The root [`vercel.json`](vercel.json) routes `/api/*` to the FastAPI function in [`api/index.py`](api/index.py), and serves the site files. Import this repository into Vercel with the repository root as the Root Directory.
+Vercel hosts the frontend and runs FastAPI. The existing [`vercel.json`](vercel.json) routes API requests to `api/index.py`; use the repository root as the Vercel Root Directory. Import the GitHub repository in Vercel, add the server environment variables listed in [`BUILD.md`](BUILD.md), then deploy. The Hugging Face token is needed for hosted query embeddings; the Groq key and an enabled Groq model are needed for LLM-written replies.
 
-Add these variables in **Project Settings → Environment Variables** for the environments you plan to use:
+After deployment, check the site, `/api/stats`, a catalog search, the chatbot, and admin sign-in. If you change a Vercel environment variable, redeploy for the new value to take effect.
 
-| Variable | Value |
+## Project files
+
+| Path | Purpose |
 | --- | --- |
-| `SUPABASE_URL` | Your Supabase project URL |
-| `SUPABASE_KEY` | Supabase service-role key; server-side only |
-| `EMBEDDING_PROVIDER` | `huggingface` |
-| `HF_TOKEN` | Hugging Face token with inference access |
-| `LLM_PROVIDER` | `groq` |
-| `GROQ_API_KEY` | Your Groq API key |
-| `GROQ_MODEL` | A model enabled for your Groq account; defaults to `openai/gpt-oss-20b` |
-| `ADMIN_USERNAME` | The admin login name you choose |
-| `ADMIN_PASSWORD_HASH` | Hash generated above |
-| `ADMIN_SECRET` | A separate random signing secret |
-
-`COOKIE_SECURE=true` is also supported; Vercel HTTPS already enables secure cookies automatically. The Vercel embedding setting calls Hugging Face, so it avoids packaging the local sentence-transformer model. After saving environment variables, deploy or redeploy so the function receives them.
-
-## Keep secrets out of Git
-
-Put local credentials in `.env`; `.gitignore` excludes it and `.vercelignore` keeps it out of Vercel uploads. Only `.env.example`, with placeholder values, belongs in Git. Never put service-role keys, provider keys, or admin secrets in browser JavaScript.
+| `index.html`, `library.html`, `novel.html`, `about.html`, `admin.html` | Site pages |
+| `css/` | Layout, theme, responsive rules, and chatbot styling |
+| `js/` | Page behavior, chat interface, and bundled sample catalog |
+| `api/main.py` | FastAPI routes, server-side admin checks, and static files for local use |
+| `api/recommender.py` | Query embeddings, Supabase search, and LLM responses |
+| `api/auth.py` | Password verification and signed admin sessions |
+| `api/index.py` | Vercel Python entry point |
+| `supabase_schema.sql` | Database table, security policy, vector index, and RPC |
+| `scripts/ingest_novels.py` | Excel-to-Supabase catalog importer |
+| `BUILD.md` | Current setup and deployment details |

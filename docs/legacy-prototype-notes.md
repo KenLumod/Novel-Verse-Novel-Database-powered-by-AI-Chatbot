@@ -1,5 +1,7 @@
 # NovelVerse — Complete Build Documentation
 
+> **Archive:** These notes describe the original static prototype and its bundled 35-novel sample data. They are not the current backend or deployment instructions. Use [`../README.md`](../README.md) for the current project overview and [`../BUILD.md`](../BUILD.md) for setup and deployment.
+
 > **Project:** AI Novel Discovery Website  
 > **Created:** November 5, 2026  
 > **Tech Stack:** HTML5, CSS3, JavaScript ES6+ (Vanilla / Zero Build Dependencies)  
